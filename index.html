@@ -38,7 +38,14 @@
     }
 
     /* ─── Header ─── */
-    .header { margin-bottom: 20px; }
+    .header {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .header__text { flex: 1; }
     .header__badge {
       display: inline-flex;
       align-items: center;
@@ -53,6 +60,82 @@
     }
     .header h1 { font-size: clamp(24px, 3vw, 34px); margin: 0 0 8px; letter-spacing: 0.02em; }
     .header p { margin: 0; color: var(--color-text-muted); line-height: 1.7; }
+    
+    .header__settings-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 22px;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+    .header__settings-btn:hover {
+      background: var(--color-border);
+      transform: rotate(45deg);
+    }
+
+    /* ─── Settings Modal ─── */
+    .settings-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 200ms ease;
+    }
+    .settings-modal.active { display: flex; }
+    .settings-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      width: 100%;
+      max-width: 500px;
+      animation: scaleUp 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+    .settings-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .settings-header h3 { margin: 0; font-size: 18px; }
+    .settings-close {
+      background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-muted);
+    }
+    .settings-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .settings-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      background: #F8FAFC;
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
 
     /* ─── Screen transitions ─── */
     .screen { display: none; animation: slideIn 260ms ease; }
@@ -569,9 +652,12 @@
 <body>
   <div class="app">
     <header class="header">
-      <div class="header__badge">⚡ 社内スタッフ向け / ノーコード公開フロー</div>
-      <h1>HP自動生成ツール</h1>
-      <p>ヒアリング内容を入力するだけで、AIがコピーを整え、GitHubへ反映し、Cloudflare Pagesの公開URLまで発行します。</p>
+      <div class="header__text">
+        <div class="header__badge">⚡ 社内スタッフ向け / ノーコード公開フロー</div>
+        <h1>HP自動生成ツール</h1>
+        <p>ヒアリング内容を入力するだけで、AIがコピーを整え、GitHubへ反映し、Cloudflare Pagesの公開URLまで発行します。</p>
+      </div>
+      <button type="button" id="openSettingsBtn" class="header__settings-btn" title="AIモデル・API設定" aria-label="AIモデル・API設定">⚙️</button>
     </header>
 
     <!-- ① 業種選択 -->
@@ -679,6 +765,52 @@
     </section>
   </div>
 
+  <!-- Settings Drawer/Modal -->
+  <div id="settingsModal" class="settings-modal">
+    <div class="settings-card">
+      <div class="settings-header">
+        <h3>⚙️ AI生成・API設定</h3>
+        <button type="button" class="settings-close" id="closeSettingsBtn">&times;</button>
+      </div>
+      <div class="settings-body">
+        <p class="small" style="margin-top:0;">生成に使用するAIモデルとAPIキーを設定します。設定値はブラウザ(localStorage)にのみ保存されます。</p>
+        
+        <div class="field" style="margin-bottom:12px;">
+          <label for="setting-provider">AIプロバイダー</label>
+          <select id="setting-provider" class="hex-input" style="width:100%; height:42px; font-size:14px; font-family:inherit;">
+            <option value="gemini">Google Gemini</option>
+            <option value="claude">Anthropic Claude</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-bottom:12px;">
+          <label for="setting-model">モデル選択</label>
+          <select id="setting-model" class="hex-input" style="width:100%; height:42px; font-size:14px; font-family:inherit;">
+            <!-- Options populated dynamically -->
+          </select>
+        </div>
+
+        <div class="field" id="customModelField" style="display:none; margin-bottom:12px;">
+          <label for="setting-custom-model">カスタムモデル名</label>
+          <input type="text" id="setting-custom-model" placeholder="例: gemini-2.5-pro" />
+        </div>
+
+        <div class="field" style="margin-bottom:12px;">
+          <label for="setting-api-key">APIキー</label>
+          <div style="position:relative; display:flex; align-items:center;">
+            <input type="password" id="setting-api-key" placeholder="APIキーを入力してください" style="padding-right:45px;" />
+            <button type="button" id="toggleApiKeyBtn" style="position:absolute; right:12px; background:none; border:none; cursor:pointer; font-size:16px; color:var(--color-text-muted); height:100%; display:flex; align-items:center;">👁️</button>
+          </div>
+          <span class="field-detail">※未入力の場合はGASのデフォルト設定キーを使用します。</span>
+        </div>
+      </div>
+      <div class="settings-footer">
+        <button type="button" class="btn btn-secondary" id="cancelSettingsBtn">キャンセル</button>
+        <button type="button" class="btn btn-primary" id="saveSettingsBtn">保存する</button>
+      </div>
+    </div>
+  </div>
+
   <script src="./config.js"></script>
   <script>
     // ============================================================
@@ -768,10 +900,133 @@
       selectedPalette: null,
       customColors: { primary: '#2563EB', secondary: '#64748B', accent: '#F8FAFC' },
       uploadedFiles: [],
-      result: { url: '', sheetUrl: '', githubUrl: '' }
+      result: { url: '', sheetUrl: '', githubUrl: '' },
+      apiSettings: {
+        provider: 'gemini',
+        model: 'gemini-2.5-flash',
+        customModel: '',
+        apiKey: ''
+      }
     };
 
     const screenIds = ['screen-industry', 'screen-form', 'screen-confirm', 'screen-loading', 'screen-complete'];
+
+    const PROVIDER_MODELS = {
+      gemini: [
+        { value: 'gemini-2.5-flash', label: 'gemini-2.5-flash (推奨・高速)' },
+        { value: 'gemini-1.5-flash', label: 'gemini-1.5-flash (軽量・安定)' },
+        { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro (高精度・複雑な指示向け)' },
+        { value: 'custom', label: 'カスタムモデル名を直接指定...' }
+      ],
+      claude: [
+        { value: 'claude-3-5-sonnet-20241022', label: 'claude-3-5-sonnet (高精度・推奨)' },
+        { value: 'claude-3-5-haiku-20241022', label: 'claude-3-5-haiku (高速・軽量)' },
+        { value: 'custom', label: 'カスタムモデル名を直接指定...' }
+      ]
+    };
+
+    function initSettings() {
+      const saved = localStorage.getItem('hp_generator_api_settings');
+      if (saved) {
+        try {
+          appState.apiSettings = JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse API settings from localStorage', e);
+        }
+      }
+      
+      const providerSelect = document.getElementById('setting-provider');
+      const modelSelect = document.getElementById('setting-model');
+      const customModelInp = document.getElementById('setting-custom-model');
+      const apiKeyInp = document.getElementById('setting-api-key');
+
+      providerSelect.value = appState.apiSettings.provider || 'gemini';
+      updateModelDropdown();
+      if (appState.apiSettings.model) {
+        const hasOption = Array.from(modelSelect.options).some(o => o.value === appState.apiSettings.model);
+        if (hasOption) {
+          modelSelect.value = appState.apiSettings.model;
+        } else {
+          modelSelect.value = 'custom';
+        }
+      }
+      customModelInp.value = appState.apiSettings.customModel || '';
+      apiKeyInp.value = appState.apiSettings.apiKey || '';
+      
+      toggleCustomModelField();
+
+      providerSelect.addEventListener('change', () => {
+        updateModelDropdown();
+        toggleCustomModelField();
+      });
+      modelSelect.addEventListener('change', toggleCustomModelField);
+      
+      document.getElementById('toggleApiKeyBtn').addEventListener('click', () => {
+        const type = apiKeyInp.type === 'password' ? 'text' : 'password';
+        apiKeyInp.type = type;
+        document.getElementById('toggleApiKeyBtn').textContent = type === 'password' ? '👁️' : '🔒';
+      });
+
+      document.getElementById('openSettingsBtn').addEventListener('click', () => {
+        providerSelect.value = appState.apiSettings.provider || 'gemini';
+        updateModelDropdown();
+        if (appState.apiSettings.model) {
+          const hasOption = Array.from(modelSelect.options).some(o => o.value === appState.apiSettings.model);
+          if (hasOption) {
+            modelSelect.value = appState.apiSettings.model;
+          } else {
+            modelSelect.value = 'custom';
+          }
+        }
+        customModelInp.value = appState.apiSettings.customModel || '';
+        apiKeyInp.value = appState.apiSettings.apiKey || '';
+        toggleCustomModelField();
+        
+        document.getElementById('settingsModal').classList.add('active');
+      });
+
+      const closeModal = () => {
+        document.getElementById('settingsModal').classList.remove('active');
+      };
+
+      document.getElementById('closeSettingsBtn').addEventListener('click', closeModal);
+      document.getElementById('cancelSettingsBtn').addEventListener('click', closeModal);
+      
+      document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+        appState.apiSettings = {
+          provider: providerSelect.value,
+          model: modelSelect.value === 'custom' ? 'custom' : modelSelect.value,
+          customModel: customModelInp.value,
+          apiKey: apiKeyInp.value
+        };
+        localStorage.setItem('hp_generator_api_settings', JSON.stringify(appState.apiSettings));
+        closeModal();
+      });
+    }
+
+    function updateModelDropdown() {
+      const provider = document.getElementById('setting-provider').value;
+      const modelSelect = document.getElementById('setting-model');
+      modelSelect.innerHTML = '';
+      
+      const models = PROVIDER_MODELS[provider] || [];
+      models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.value;
+        opt.textContent = m.label;
+        modelSelect.appendChild(opt);
+      });
+    }
+
+    function toggleCustomModelField() {
+      const modelSelect = document.getElementById('setting-model');
+      const customField = document.getElementById('customModelField');
+      if (modelSelect.value === 'custom') {
+        customField.style.display = 'block';
+      } else {
+        customField.style.display = 'none';
+      }
+    }
 
     // ============================================================
     // 画面制御
@@ -1264,12 +1519,19 @@
 
     function getSubmissionPayload() {
       const industry = getIndustryConfig(appState.selectedIndustry);
+      let modelName = appState.apiSettings.model;
+      if (modelName === 'custom') {
+        modelName = appState.apiSettings.customModel;
+      }
       return {
         industry: appState.selectedIndustry,
         industry_label: industry?.label || '',
         colors: appState.customColors,
         palette: appState.selectedPalette,
         uploaded_files_count: appState.uploadedFiles.length,
+        api_provider: appState.apiSettings.provider,
+        api_key: appState.apiSettings.apiKey,
+        model: modelName,
         ...appState.formData,
       };
     }
@@ -1418,6 +1680,7 @@
     // 初期化
     // ============================================================
     renderIndustryCards();
+    initSettings();
     updateProgressBars(1);
   </script>
 </body>

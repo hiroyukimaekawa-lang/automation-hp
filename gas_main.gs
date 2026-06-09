@@ -77,7 +77,7 @@ function onFormSubmit(formData) {
   var props = getRequiredProperties_();
   var siteId = generateSiteId(formData.industry);
   var siteData = buildSiteData(formData, siteId);
-  var enhanced = callGeminiAPI(siteData);
+  var enhanced = callAI(siteData, formData.api_provider, formData.api_key, formData.model);
   var json = buildSiteJson(siteData, enhanced);
   var pushResult = pushToGitHub(siteId, json, formData.industry, props);
   var recordResult = recordToSheet(siteId, formData, enhanced, props);
@@ -118,10 +118,32 @@ function buildSiteData(formData, siteId) {
  * Gemini API を呼び出してコピーを生成します。
  * 出力が崩れた場合にもある程度復旧できるようパース補助を入れています。
  */
-function callGeminiAPI(siteData) {
-  var props = getRequiredProperties_();
-  var apiKey = props.GEMINI_API_KEY;
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + encodeURIComponent(apiKey);
+/**
+ * AI API を呼び出してコピーを生成します。
+ * プロバイダー (gemini / claude) に応じて処理を振り分けます。
+ */
+function callAI(siteData, apiProvider, apiKey, modelName) {
+  var props = PropertiesService.getScriptProperties();
+  
+  if (!apiProvider) {
+    apiProvider = 'gemini';
+  }
+  
+  if (!apiKey) {
+    if (apiProvider === 'gemini') {
+      apiKey = props.getProperty('GEMINI_API_KEY');
+    } else if (apiProvider === 'claude' || apiProvider === 'anthropic') {
+      apiKey = props.getProperty('CLAUDE_API_KEY');
+    }
+    
+    if (!apiKey) {
+      throw new Error(apiProvider.toUpperCase() + 'のAPIキーが設定されていません。ブラウザの右上⚙️アイコンから設定するか、GASのスクリプトプロパティ(GEMINI_API_KEY / CLAUDE_API_KEY)を設定してください。');
+    }
+  }
+  
+  if (!modelName || modelName === 'custom') {
+    modelName = (apiProvider === 'gemini') ? 'gemini-2.5-flash' : 'claude-3-5-sonnet-20241022';
+  }
 
   var prompt = [
     'あなたはプロのコピーライターです。',
@@ -141,6 +163,18 @@ function callGeminiAPI(siteData) {
     '出力例：',
     '{"hero_headline":"...","hero_subtext":"...","about_text":"...","seo_description":"..."}'
   ].join('\n');
+
+  if (apiProvider === 'gemini') {
+    return callGeminiAPI_(siteData, apiKey, modelName, prompt);
+  } else if (apiProvider === 'claude' || apiProvider === 'anthropic') {
+    return callClaudeAPI_(siteData, apiKey, modelName, prompt);
+  } else {
+    throw new Error('サポートされていないAIプロバイダーです: ' + apiProvider);
+  }
+}
+
+function callGeminiAPI_(siteData, apiKey, modelName, prompt) {
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent?key=' + encodeURIComponent(apiKey);
 
   var payload = {
     contents: [
@@ -177,6 +211,52 @@ function callGeminiAPI(siteData) {
 
   if (!rawText) {
     throw new Error('Gemini APIの応答に生成テキストが含まれていません。');
+  }
+
+  var parsed = safeJsonParse_(rawText);
+  return {
+    hero_headline: sanitizeString_(parsed.hero_headline) || fallbackHeroHeadline_(siteData),
+    hero_subtext: sanitizeString_(parsed.hero_subtext) || fallbackHeroSubtext_(siteData),
+    about_text: sanitizeString_(parsed.about_text) || fallbackAboutText_(siteData),
+    seo_description: sanitizeString_(parsed.seo_description) || fallbackSeoDescription_(siteData)
+  };
+}
+
+function callClaudeAPI_(siteData, apiKey, modelName, prompt) {
+  var url = 'https://api.anthropic.com/v1/messages';
+  var headers = {
+    'x-api-key': apiKey,
+    'anthropic-version': '2023-06-01',
+    'content-type': 'application/json'
+  };
+
+  var payload = {
+    model: modelName,
+    max_tokens: 1024,
+    messages: [
+      { role: 'user', content: prompt }
+    ],
+    temperature: 0.7
+  };
+
+  var response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    headers: headers,
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+
+  var code = response.getResponseCode();
+  var text = response.getContentText();
+  if (code < 200 || code >= 300) {
+    throw new Error('Claude APIエラー: HTTP ' + code + ' / ' + text);
+  }
+
+  var json = JSON.parse(text);
+  var rawText = (((json || {}).content || [])[0] || {}).text || '';
+
+  if (!rawText) {
+    throw new Error('Claude APIの応答に生成テキストが含まれていません。');
   }
 
   var parsed = safeJsonParse_(rawText);
@@ -334,7 +414,6 @@ function getRequiredProperties_() {
   };
 
   var requiredKeys = [
-    'GEMINI_API_KEY',
     'GITHUB_TOKEN',
     'GITHUB_OWNER',
     'GITHUB_REPO',
