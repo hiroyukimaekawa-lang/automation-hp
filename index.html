@@ -15,9 +15,6 @@
       --color-border: #E2E8F0;
       --color-success: #10B981;
       --color-danger: #EF4444;
-      --font-size-base: 15px;
-      --font-size-lg: 18px;
-      --font-size-xl: 24px;
       --radius: 12px;
       --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
       --max-width: 980px;
@@ -28,7 +25,7 @@
     html, body { margin: 0; padding: 0; }
     body {
       font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
-      font-size: var(--font-size-base);
+      font-size: 15px;
       background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
       color: var(--color-text);
       min-height: 100vh;
@@ -37,13 +34,11 @@
     .app {
       max-width: var(--max-width);
       margin: 0 auto;
-      padding: 24px 16px 40px;
+      padding: 24px 16px 60px;
     }
 
-    .header {
-      margin-bottom: 20px;
-    }
-
+    /* ─── Header ─── */
+    .header { margin-bottom: 20px; }
     .header__badge {
       display: inline-flex;
       align-items: center;
@@ -56,46 +51,33 @@
       font-size: 13px;
       margin-bottom: 12px;
     }
+    .header h1 { font-size: clamp(24px, 3vw, 34px); margin: 0 0 8px; letter-spacing: 0.02em; }
+    .header p { margin: 0; color: var(--color-text-muted); line-height: 1.7; }
 
-    .header h1 {
-      font-size: clamp(24px, 3vw, 34px);
-      margin: 0 0 8px;
-      letter-spacing: 0.02em;
-    }
-
-    .header p {
-      margin: 0;
-      color: var(--color-text-muted);
-      line-height: 1.7;
-    }
-
-    .screen {
-      display: none;
-      animation: slideIn 260ms ease;
-    }
-
+    /* ─── Screen transitions ─── */
+    .screen { display: none; animation: slideIn 260ms ease; }
     .screen.active { display: block; }
-
     @keyframes slideIn {
       from { opacity: 0; transform: translateX(14px); }
-      to { opacity: 1; transform: translateX(0); }
+      to   { opacity: 1; transform: translateX(0); }
     }
 
+    /* ─── Card ─── */
     .card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 20px;
+      padding: 24px;
     }
 
+    /* ─── Industry Grid ─── */
     .industry-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
       margin-top: 20px;
     }
-
     .industry-card {
       border: 1px solid var(--color-border);
       border-radius: 16px;
@@ -110,144 +92,351 @@
       justify-content: center;
       gap: 10px;
     }
-
-    .industry-card:hover,
-    .industry-card:focus-visible {
+    .industry-card:hover, .industry-card:focus-visible {
       transform: translateY(-2px);
       border-color: var(--color-primary);
-      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 10px 20px rgba(37,99,235,0.1);
       outline: none;
     }
-
     .industry-card.selected {
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
     }
+    .industry-card__icon  { font-size: 34px; line-height: 1; }
+    .industry-card__title { font-size: 18px; font-weight: 700; }
+    .industry-card__id    { font-size: 13px; color: var(--color-text-muted); }
 
-    .industry-card__icon {
-      font-size: 34px;
-      line-height: 1;
-    }
-
-    .industry-card__title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .industry-card__id {
-      font-size: 13px;
-      color: var(--color-text-muted);
-    }
-
-    .progress-wrap {
-      margin-bottom: 18px;
-    }
-
+    /* ─── Progress ─── */
+    .progress-wrap { margin-bottom: 20px; }
     .progress-labels {
       display: flex;
       justify-content: space-between;
       font-size: 12px;
       color: var(--color-text-muted);
       margin-bottom: 8px;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
-
     .progress-bar {
-      width: 100%;
-      height: 10px;
+      width: 100%; height: 10px;
       border-radius: 999px;
       background: #E5E7EB;
       overflow: hidden;
     }
-
     .progress-bar__value {
-      height: 100%;
-      width: 0;
+      height: 100%; width: 0;
       background: linear-gradient(90deg, var(--color-primary), #60A5FA);
-      transition: width 260ms ease;
+      transition: width 300ms ease;
     }
 
-    .section-title {
-      font-size: 16px;
+    /* ─── Form Sections ─── */
+    .form-section {
+      margin-top: 20px;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .form-section__header {
+      background: linear-gradient(90deg, #F1F5F9, #F8FAFC);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px 18px;
       font-weight: 700;
-      margin: 22px 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 15px;
     }
-
-    .section-title:first-of-type { margin-top: 4px; }
-
-    .form-grid {
+    .form-section__body {
+      padding: 18px;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .form-section__body.block {
+      display: block;
     }
 
+    /* ─── Fields ─── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
     .field.full { grid-column: 1 / -1; }
 
     .field label {
       font-weight: 700;
       font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .badge-required {
+      font-size: 11px; font-weight: 700;
+      background: #FEF2F2; color: var(--color-danger);
+      border: 1px solid #FECACA;
+      border-radius: 4px; padding: 1px 6px;
+    }
+    .badge-optional {
+      font-size: 11px; font-weight: 700;
+      background: #F1F5F9; color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
+      border-radius: 4px; padding: 1px 6px;
+    }
+    .field-detail {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.45;
     }
 
-    .field .required {
-      color: var(--color-danger);
-      margin-left: 4px;
-    }
-
-    input, textarea {
+    input:not([type="color"]):not([type="file"]), textarea {
       width: 100%;
       border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 12px 14px;
+      border-radius: 10px;
+      padding: 10px 13px;
       font: inherit;
       color: var(--color-text);
       background: #fff;
       transition: border-color var(--transition), box-shadow var(--transition);
+      font-size: 14px;
     }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-      line-height: 1.65;
-    }
-
-    input:focus, textarea:focus {
+    textarea { min-height: 100px; resize: vertical; line-height: 1.65; }
+    input:not([type="color"]):not([type="file"]):focus,
+    textarea:focus {
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
       outline: none;
     }
-
-    .help {
-      color: var(--color-text-muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .error-text {
-      color: var(--color-danger);
-      font-size: 12px;
-      display: none;
-    }
-
-    .field.invalid .error-text {
-      display: block;
-    }
-
-    .field.invalid input,
+    .error-text { color: var(--color-danger); font-size: 12px; display: none; }
+    .field.invalid .error-text { display: block; }
+    .field.invalid input:not([type="color"]),
     .field.invalid textarea {
       border-color: var(--color-danger);
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
     }
 
+    /* ─── Color Palette ─── */
+    .color-palette-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 10px 0 16px;
+    }
+    .palette-card {
+      border: 2px solid var(--color-border);
+      border-radius: 10px;
+      padding: 10px 6px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      background: #fff;
+      user-select: none;
+    }
+    .palette-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.12);
+    }
+    .palette-card.selected {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+    .palette-swatches {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+    .palette-swatch {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .palette-name { font-size: 11px; font-weight: 700; color: var(--color-text); }
+
+    .custom-color-section {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: #F8FAFC;
+    }
+    .custom-color-section h4 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+    .color-pickers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .color-picker-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .color-picker-item > label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    input[type="color"] {
+      width: 42px; height: 42px;
+      border: 2px solid var(--color-border);
+      border-radius: 10px;
+      padding: 2px;
+      cursor: pointer;
+      background: none;
+      flex-shrink: 0;
+    }
+    .hex-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: monospace;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+    }
+
+    /* ─── Dropzone ─── */
+    .dropzone {
+      border: 2px dashed var(--color-border);
+      border-radius: 12px;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      background: #FAFBFC;
+      position: relative;
+    }
+    .dropzone:hover, .dropzone.drag-over {
+      border-color: var(--color-primary);
+      background: #EFF6FF;
+    }
+    .dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .dropzone__icon  { font-size: 32px; margin-bottom: 8px; }
+    .dropzone__text  { font-size: 14px; color: var(--color-text-muted); }
+    .dropzone__sub   { font-size: 12px; color: var(--color-text-muted); margin-top: 4px; }
+
+    .file-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .file-preview-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      aspect-ratio: 1;
+      background: #F1F5F9;
+    }
+    .file-preview-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .file-remove-btn {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 22px; height: 22px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .file-name-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 10px;
+      padding: 3px 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* ─── Confirm Screen ─── */
+    .confirm-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .confirm-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .confirm-section-hd {
+      grid-column: 1 / -1;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 0 4px;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      margin-top: 8px;
+    }
+    .confirm-item {
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 13px 15px;
+      background: #fff;
+    }
+    .confirm-item.full { grid-column: 1 / -1; }
+    .confirm-item__label { font-size: 12px; color: var(--color-text-muted); margin-bottom: 6px; }
+    .confirm-item__value { font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+    .confirm-swatches {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .confirm-swatch-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .confirm-swatch {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    .confirm-swatch-hex { font-size: 12px; font-family: monospace; color: var(--color-text-muted); }
+
+    .confirm-thumbs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .confirm-thumb {
+      width: 64px; height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--color-border);
+    }
+
+    /* ─── Buttons ─── */
     .actions {
       display: flex;
       justify-content: space-between;
@@ -256,21 +445,16 @@
       flex-wrap: wrap;
       margin-top: 24px;
     }
-
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
+    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
     .btn {
       appearance: none;
       border: none;
       cursor: pointer;
       border-radius: 12px;
-      padding: 12px 18px;
+      padding: 12px 20px;
       font: inherit;
       font-weight: 700;
+      font-size: 14px;
       transition: transform var(--transition), background var(--transition), opacity var(--transition), box-shadow var(--transition);
       text-decoration: none;
       display: inline-flex;
@@ -278,132 +462,53 @@
       justify-content: center;
       gap: 8px;
     }
-
     .btn:hover { transform: translateY(-1px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .btn-primary {
-      background: var(--color-primary);
-      color: #fff;
-      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.16);
+      background: var(--color-primary); color: #fff;
+      box-shadow: 0 8px 16px rgba(37,99,235,0.18);
     }
-
     .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-secondary { background: #fff; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-success   { background: var(--color-success); color: #fff; }
 
-    .btn-secondary {
-      background: #fff;
-      color: var(--color-text);
-      border: 1px solid var(--color-border);
-    }
-
-    .btn-success {
-      background: var(--color-success);
-      color: #fff;
-    }
-
-    .confirm-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    .confirm-item {
-      border: 1px solid var(--color-border);
-      border-radius: 14px;
-      padding: 16px;
-      background: #fff;
-    }
-
-    .confirm-item.full { grid-column: 1 / -1; }
-
-    .confirm-item__label {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      margin-bottom: 8px;
-    }
-
-    .confirm-item__value {
-      font-size: 15px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .confirm-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .loading-center,
-    .complete-center {
-      text-align: center;
-      padding: 12px 0;
-    }
-
+    /* ─── Loading & Complete ─── */
+    .loading-center, .complete-center { text-align: center; padding: 12px 0; }
     .spinner {
-      width: 64px;
-      height: 64px;
+      width: 64px; height: 64px;
       border: 6px solid #DBEAFE;
       border-top-color: var(--color-primary);
       border-radius: 50%;
-      margin: 8px auto 20px;
+      margin: 12px auto 20px;
       animation: spin 0.9s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .status-list {
-      list-style: none;
-      padding: 0;
-      margin: 24px 0 0;
-      display: grid;
-      gap: 12px;
-    }
-
+    .status-list { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; }
     .status-item {
       border: 1px solid var(--color-border);
       border-radius: 12px;
-      padding: 14px 16px;
+      padding: 13px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
       background: #fff;
       text-align: left;
     }
-
-    .status-item .icon {
-      width: 28px;
-      min-width: 28px;
-      text-align: center;
-      font-size: 18px;
-    }
-
+    .status-item .icon { width: 28px; min-width: 28px; text-align: center; font-size: 18px; }
     .status-item.pending .icon { color: #F59E0B; }
-    .status-item.done {
-      border-color: rgba(16, 185, 129, 0.2);
-      background: rgba(16, 185, 129, 0.04);
-    }
+    .status-item.done { border-color: rgba(16,185,129,0.2); background: rgba(16,185,129,0.04); }
     .status-item.done .icon { color: var(--color-success); }
 
-    .complete-icon {
-      font-size: 72px;
-      line-height: 1;
-      margin-bottom: 12px;
-    }
+    .complete-icon { font-size: 72px; line-height: 1; margin-bottom: 12px; }
 
     .result-box {
-      margin-top: 24px;
-      padding: 18px;
+      margin-top: 24px; padding: 18px;
       border-radius: 14px;
       border: 1px solid #BBF7D0;
       background: #F0FDF4;
       text-align: left;
     }
-
     .result-url {
       display: flex;
       align-items: stretch;
@@ -411,18 +516,8 @@
       flex-wrap: wrap;
       margin-top: 10px;
     }
-
-    .result-url input {
-      flex: 1;
-      min-width: 220px;
-      background: #fff;
-    }
-
-    .inline-links {
-      display: grid;
-      gap: 12px;
-      margin-top: 24px;
-    }
+    .result-url input { flex: 1; min-width: 220px; background: #fff; }
+    .inline-links { display: grid; gap: 10px; margin-top: 20px; }
 
     .notice {
       padding: 12px 14px;
@@ -432,6 +527,7 @@
       border: 1px solid #BFDBFE;
       margin-top: 14px;
       line-height: 1.6;
+      font-size: 13px;
     }
 
     .error-banner {
@@ -444,20 +540,23 @@
       color: #991B1B;
       line-height: 1.6;
     }
-
     .error-banner.show { display: block; }
 
-    .small {
-      font-size: 12px;
-      color: var(--color-text-muted);
+    .small { font-size: 13px; color: var(--color-text-muted); line-height: 1.6; }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 20px 0;
     }
 
     @media (max-width: 768px) {
       .industry-grid,
-      .form-grid,
-      .confirm-grid {
-        grid-template-columns: 1fr;
-      }
+      .color-palette-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .form-section__body:not(.block),
+      .confirm-grid,
+      .color-pickers-grid { grid-template-columns: 1fr; }
 
       .card { padding: 16px; }
       .actions { flex-direction: column; align-items: stretch; }
@@ -475,114 +574,89 @@
       <p>ヒアリング内容を入力するだけで、AIがコピーを整え、GitHubへ反映し、Cloudflare Pagesの公開URLまで発行します。</p>
     </header>
 
+    <!-- ① 業種選択 -->
     <section id="screen-industry" class="screen active">
       <div class="card">
         <h2>① 業種を選択</h2>
-        <p class="help">まずはクライアントの業種を選んでください。選択後、そのままヒアリング入力に進みます。</p>
+        <p class="small">まずはクライアントの業種を選んでください。選択後、そのままヒアリング入力に進みます。</p>
         <div id="industryGrid" class="industry-grid"></div>
       </div>
     </section>
 
+    <!-- ② ヒアリング入力 -->
     <section id="screen-form" class="screen">
       <div class="card">
         <div class="progress-wrap">
           <div class="progress-labels">
-            <span>① 業種選択</span>
-            <span>② ヒアリング入力</span>
-            <span>③ 入力確認</span>
-            <span>④ 生成中</span>
-            <span>⑤ 完了</span>
+            <span>① 業種選択</span><span>② ヒアリング入力</span><span>③ 入力確認</span><span>④ 生成中</span><span>⑤ 完了</span>
           </div>
           <div class="progress-bar"><div id="progressBar" class="progress-bar__value"></div></div>
         </div>
-
         <h2>② ヒアリング入力フォーム</h2>
-        <p id="selectedIndustryText" class="help"></p>
+        <p id="selectedIndustryText" class="small"></p>
         <form id="hearingForm" novalidate>
-          <h3 class="section-title">🧾 基本情報</h3>
-          <div class="form-grid" id="basicFields"></div>
-
-          <h3 class="section-title">📝 詳細情報</h3>
-          <div class="form-grid" id="detailFields"></div>
-
+          <div id="formSections"></div>
           <div class="actions">
-            <button type="button" class="btn btn-secondary" id="backToIndustryBtn">戻る</button>
-            <div class="btn-group">
-              <button type="button" class="btn btn-primary" id="confirmBtn">入力内容を確認する</button>
-            </div>
+            <button type="button" class="btn btn-secondary" id="backToIndustryBtn">← 戻る</button>
+            <button type="button" class="btn btn-primary" id="confirmBtn">入力内容を確認する →</button>
           </div>
         </form>
       </div>
     </section>
 
+    <!-- ③ 入力確認 -->
     <section id="screen-confirm" class="screen">
       <div class="card">
         <div class="progress-wrap">
           <div class="progress-labels">
-            <span>① 業種選択</span>
-            <span>② ヒアリング入力</span>
-            <span>③ 入力確認</span>
-            <span>④ 生成中</span>
-            <span>⑤ 完了</span>
+            <span>① 業種選択</span><span>② ヒアリング入力</span><span>③ 入力確認</span><span>④ 生成中</span><span>⑤ 完了</span>
           </div>
           <div class="progress-bar"><div id="progressBarConfirm" class="progress-bar__value"></div></div>
         </div>
-
         <div class="confirm-top">
           <div>
             <h2>③ 入力内容の確認</h2>
-            <p class="help">内容に問題がなければ「生成開始」を押してください。修正したい場合は編集ボタンから戻れます。</p>
+            <p class="small">内容に問題がなければ「生成開始」を押してください。修正したい場合は編集ボタンから戻れます。</p>
           </div>
-          <button type="button" class="btn btn-secondary" id="editBtn">編集する</button>
+          <button type="button" class="btn btn-secondary" id="editBtn">✏️ 編集する</button>
         </div>
-
         <div id="confirmGrid" class="confirm-grid"></div>
-
         <div class="actions">
-          <button type="button" class="btn btn-secondary" id="confirmBackBtn">戻る</button>
-          <button type="button" class="btn btn-primary" id="generateBtn">生成開始</button>
+          <button type="button" class="btn btn-secondary" id="confirmBackBtn">← 戻る</button>
+          <button type="button" class="btn btn-primary" id="generateBtn">🚀 生成開始</button>
         </div>
       </div>
     </section>
 
+    <!-- ④ 生成中 -->
     <section id="screen-loading" class="screen">
       <div class="card loading-center">
         <div class="progress-wrap">
           <div class="progress-labels">
-            <span>① 業種選択</span>
-            <span>② ヒアリング入力</span>
-            <span>③ 入力確認</span>
-            <span>④ 生成中</span>
-            <span>⑤ 完了</span>
+            <span>① 業種選択</span><span>② ヒアリング入力</span><span>③ 入力確認</span><span>④ 生成中</span><span>⑤ 完了</span>
           </div>
           <div class="progress-bar"><div id="progressBarLoading" class="progress-bar__value"></div></div>
         </div>
-
         <h2>④ サイトを生成しています</h2>
-        <p class="help">処理には数秒〜十数秒かかる場合があります。画面を閉じずにお待ちください。</p>
+        <p class="small">処理には数秒〜十数秒かかる場合があります。画面を閉じずにお待ちください。</p>
         <div class="spinner" aria-hidden="true"></div>
         <ul id="statusList" class="status-list"></ul>
         <div id="errorBanner" class="error-banner"></div>
       </div>
     </section>
 
+    <!-- ⑤ 完了 -->
     <section id="screen-complete" class="screen">
       <div class="card complete-center">
         <div class="progress-wrap">
           <div class="progress-labels">
-            <span>① 業種選択</span>
-            <span>② ヒアリング入力</span>
-            <span>③ 入力確認</span>
-            <span>④ 生成中</span>
-            <span>⑤ 完了</span>
+            <span>① 業種選択</span><span>② ヒアリング入力</span><span>③ 入力確認</span><span>④ 生成中</span><span>⑤ 完了</span>
           </div>
           <div class="progress-bar"><div id="progressBarComplete" class="progress-bar__value"></div></div>
         </div>
-
         <div class="complete-icon">✅</div>
         <h2>⑤ サイトを発行しました</h2>
-        <p class="help">以下のURLと管理情報を確認してください。</p>
-
+        <p class="small">以下のURLと管理情報を確認してください。</p>
         <div class="result-box">
           <div><strong>発行URL</strong></div>
           <div class="result-url">
@@ -590,16 +664,14 @@
             <button id="copyUrlBtn" type="button" class="btn btn-secondary">URLをコピー</button>
           </div>
           <div class="inline-links">
-            <a id="openSiteBtn" class="btn btn-primary" href="#" target="_blank" rel="noopener">サイトを確認する</a>
-            <a id="openSheetBtn" class="btn btn-secondary" href="#" target="_blank" rel="noopener">スプレッドシートを開く</a>
+            <a id="openSiteBtn"   class="btn btn-primary"   href="#" target="_blank" rel="noopener">サイトを確認する</a>
+            <a id="openSheetBtn"  class="btn btn-secondary" href="#" target="_blank" rel="noopener">スプレッドシートを開く</a>
             <a id="openManageBtn" class="btn btn-secondary" href="#" target="_blank" rel="noopener">管理リンクを開く</a>
           </div>
         </div>
-
         <div class="notice">
           Cloudflare Pagesの反映直後は、表示まで数十秒かかる場合があります。アクセスできない場合は少し待ってから再読み込みしてください。
         </div>
-
         <div class="actions" style="justify-content:center; margin-top: 24px;">
           <button type="button" class="btn btn-success" id="resetBtn">次のサイトを作成する</button>
         </div>
@@ -609,114 +681,104 @@
 
   <script src="./config.js"></script>
   <script>
-    // 業種別の追加フィールド定義
-    const INDUSTRY_EXTRA_FIELDS = {
-      salon: [
-        {
-          id: 'menu_details',
-          label: 'メニュー・料金',
-          type: 'textarea',
-          required: false,
-          maxLength: 1000,
-          placeholder: '例：カット 4,500円 / カラー 6,500円 / トリートメント 3,000円'
-        },
-        {
-          id: 'staff_intro',
-          label: 'スタイリスト紹介',
-          type: 'textarea',
-          required: false,
-          maxLength: 1000,
-          placeholder: '例：店長○○。都内サロン歴10年。似合わせカットが得意。'
-        }
-      ],
-      food: [
-        {
-          id: 'menu_details',
-          label: 'メニュー・料金',
-          type: 'textarea',
-          required: false,
-          maxLength: 1000,
-          placeholder: '例：ランチプレート 1,200円 / ブレンドコーヒー 550円'
-        },
-        {
-          id: 'seat_info',
-          label: '席数・個室有無',
-          type: 'text',
-          required: false,
-          maxLength: 120,
-          placeholder: '例：全24席 / 半個室2室あり'
-        }
-      ],
-      clinic: [
-        {
-          id: 'menu_details',
-          label: '施術メニュー',
-          type: 'textarea',
-          required: false,
-          maxLength: 1000,
-          placeholder: '例：整体 60分 5,500円 / 骨盤調整 45分 4,000円'
-        },
-        {
-          id: 'credentials',
-          label: '資格・経歴',
-          type: 'textarea',
-          required: false,
-          maxLength: 1000,
-          placeholder: '例：柔道整復師。施術歴12年。スポーツケア実績多数。'
-        }
-      ],
-      school: [
-        {
-          id: 'menu_details',
-          label: 'コース・料金',
-          type: 'textarea',
-          required: false,
-          maxLength: 1000,
-          placeholder: '例：月4回コース 8,800円 / 個別レッスン 60分 3,500円'
-        },
-        {
-          id: 'target_level',
-          label: '対象年齢・レベル',
-          type: 'text',
-          required: false,
-          maxLength: 120,
-          placeholder: '例：小学生〜大人 / 初心者〜上級者'
-        }
-      ]
-    };
+    // ============================================================
+    // データ定義
+    // ============================================================
 
-    // 共通フィールド定義
-    const COMMON_FIELDS = [
-      { id: 'shop_name', label: '店舗名・屋号', type: 'text', required: true, maxLength: 50, placeholder: '例：美容室 Lumière' },
-      { id: 'tagline', label: 'キャッチフレーズ（任意）', type: 'text', required: false, maxLength: 100, placeholder: '例：毎日に、似合う美しさを。' },
-      { id: 'concept', label: 'コンセプト・想い', type: 'textarea', required: true, maxLength: 500, placeholder: '例：忙しい毎日の中でも、ほっとできる時間を届けたい。丁寧なカウンセリングで、一人ひとりに似合う提案を大切にしています。' },
-      { id: 'address', label: '住所', type: 'text', required: true, maxLength: 200, placeholder: '例：東京都渋谷区○○1-2-3 ○○ビル2F' },
-      { id: 'tel', label: '電話番号', type: 'tel', required: false, maxLength: 30, placeholder: '例：03-1234-5678' },
-      { id: 'hours', label: '営業時間', type: 'text', required: false, maxLength: 100, placeholder: '例：10:00〜19:00' },
-      { id: 'closed_days', label: '定休日', type: 'text', required: false, maxLength: 100, placeholder: '例：毎週火曜・第2水曜' },
-      { id: 'sns_instagram', label: 'Instagram URL', type: 'url', required: false, maxLength: 200, placeholder: '例：https://www.instagram.com/example/' }
+    const COLOR_PALETTES = [
+      { id: 'red-black',  name: '赤・黒・白',   primary: '#CC0000', secondary: '#1A1A1A', accent: '#FFFFFF' },
+      { id: 'wagei',      name: '和風',          primary: '#8B1A1A', secondary: '#C5A028', accent: '#FFF8F0' },
+      { id: 'natural',    name: 'ナチュラル',    primary: '#6B5B3E', secondary: '#8FAF7E', accent: '#FDF6EC' },
+      { id: 'blue',       name: 'ブルー',        primary: '#1B4F8A', secondary: '#3B82F6', accent: '#F0F7FF' },
+      { id: 'pink',       name: 'ピンク',        primary: '#C2185B', secondary: '#F48FB1', accent: '#FFF0F5' },
+      { id: 'mono',       name: 'モノクロ',      primary: '#1A1A1A', secondary: '#6B7280', accent: '#F9FAFB' },
+      { id: 'green',      name: 'グリーン',      primary: '#1B5E20', secondary: '#4CAF50', accent: '#F1F8E9' },
+      { id: 'orange',     name: 'オレンジ',      primary: '#E65100', secondary: '#795548', accent: '#FFF8F0' },
     ];
 
-    const MOCK_DELAY_MS = 1700;
+    // フォームセクション定義（CSVのヒアリングシートに準拠）
+    const FORM_SECTIONS = [
+      {
+        id: 'basic',
+        title: '🧾 基本情報',
+        fields: [
+          { id: 'shop_name',   label: '正式名称',             detail: '会社名、ブランド名、サービス名など',                         type: 'text',     required: true,  maxLength: 100,  placeholder: '例：馬力食堂(バリキショクドウ)' },
+          { id: 'contact',     label: '所在地・連絡先',       detail: '事業所の住所、電話番号、代表メールアドレスなど',             type: 'textarea', required: true,  maxLength: 400,  placeholder: '例：〒564-0011 大阪府吹田市岸部南２丁目３−１０\n06-6155-9252' },
+          { id: 'hours',       label: '営業時間・対応時間',   detail: '通常の営業・対応時間、受付時間など',                         type: 'text',     required: true,  maxLength: 200,  placeholder: '例：月～日　18時00分～23時30分' },
+          { id: 'closed_days', label: '定休日・休業日',       detail: '不定休の場合はその旨や、休業日、対応不可な期間など',         type: 'text',     required: true,  maxLength: 100,  placeholder: '例：火曜日' },
+          { id: 'access',      label: 'アクセス方法・交通手段', detail: '最寄駅からの時間、駐車場情報、オンラインアクセス方法など', type: 'text',     required: true,  maxLength: 200,  placeholder: '例：岸部駅 徒歩3分、駐車場あり' },
+        ]
+      },
+      {
+        id: 'concept',
+        title: '💡 事業・サービスコンセプト',
+        fields: [
+          { id: 'concept',          label: 'コンセプト',           detail: 'ターゲット層、提供したい価値、強みなど',           type: 'textarea', required: true,  maxLength: 1000, placeholder: '例：その時期にしかない美味しさを詰め込んだ一品と、真心込めたおもてなしで、心もお腹も満タンに。' },
+          { id: 'service_overview', label: '事業・サービス概要',   detail: 'メインの事業内容、サービスの特徴、こだわりなど', type: 'textarea', required: false, maxLength: 1000, placeholder: '例：創作和洋中料理。週末は鮮度のいいお魚を使った旬の一品。' },
+        ]
+      },
+      // デザインセクションはここに動的挿入される
+      {
+        id: 'content_info',
+        title: '📋 提供情報',
+        fields: [
+          { id: 'service_details',    label: '商品・サービス情報',     detail: '商品・サービス名と価格、詳細など（Drive URLも可）',       type: 'textarea', required: false, maxLength: 2000, placeholder: '例：おまかせコース 3,500円〜\nhttps://drive.google.com/...' },
+          { id: 'service_images_url', label: '素材・画像データURL',   detail: 'ロゴ・写真・商品画像等のDriveフォルダURLなど',           type: 'text',     required: false, maxLength: 500,  placeholder: '例：https://drive.google.com/drive/folders/xxx' },
+        ]
+      },
+      {
+        id: 'functions',
+        title: '⚙️ 機能要件',
+        fields: [
+          { id: 'reservation',   label: '予約・申し込みシステム', detail: '自社システム、外部サービス利用の有無と詳細',               type: 'text',     required: false, maxLength: 300, placeholder: '例：ご予約はお電話からお願いいたします。' },
+          { id: 'contact_form',  label: 'お問い合わせフォーム',   detail: '設置の有無、必要項目、自動返信の要否など',                 type: 'text',     required: false, maxLength: 200, placeholder: '例：なし / あり（名前・メール・内容）' },
+          { id: 'sns',           label: 'SNS連携',               detail: '連携したいSNSアカウント（Instagram, X, Facebookなど）',   type: 'textarea', required: false, maxLength: 400, placeholder: '例：Instagram\nhttps://www.instagram.com/example/' },
+        ]
+      },
+      {
+        id: 'about',
+        title: '📖 コンテンツ',
+        fields: [
+          { id: 'history', label: '沿革・代表者紹介', detail: '企業や事業の歴史、代表者・担当者の紹介など', type: 'textarea', required: false, maxLength: 1000, placeholder: '例：料理一筋で美味しさを追求し続けております。長年のうまさを引き出せる変わらず美味しさを。' },
+        ]
+      },
+      {
+        id: 'other',
+        title: '📌 その他',
+        fields: [
+          { id: 'domain',   label: 'ドメイン希望', detail: '取得希望ドメイン名、既存ドメインの有無など',     type: 'text',     required: false, maxLength: 100,  placeholder: '例：bariki' },
+          { id: 'deadline', label: '納期希望',     detail: '公開希望日、プロジェクト完了希望日など',         type: 'text',     required: false, maxLength: 100,  placeholder: '例：7月1日' },
+          { id: 'notes',    label: 'その他・備考', detail: 'その他ご要望、特記事項など',                     type: 'textarea', required: false, maxLength: 1000, placeholder: '例：写真は同じのは1枚で、一番よさそうなやつを使ってください' },
+        ]
+      },
+    ];
+
+    const DESIGN_FIELDS = [
+      { id: 'ref_url', label: '参考HP URL', detail: '参考にしたいHPのURLを記入してください（複数可、1行1URL）', type: 'textarea', required: false, maxLength: 1000, placeholder: '例：https://example.com/\nhttps://another-site.com/' },
+    ];
+
+    const ALL_FIELDS = [...FORM_SECTIONS.flatMap(s => s.fields), ...DESIGN_FIELDS];
+
+    const MOCK_DELAY_MS = 1500;
+
     const appState = {
       step: 1,
       selectedIndustry: null,
       formData: {},
-      result: {
-        url: '',
-        sheetUrl: '',
-        githubUrl: ''
-      }
+      selectedPalette: null,
+      customColors: { primary: '#2563EB', secondary: '#64748B', accent: '#F8FAFC' },
+      uploadedFiles: [],
+      result: { url: '', sheetUrl: '', githubUrl: '' }
     };
 
     const screenIds = ['screen-industry', 'screen-form', 'screen-confirm', 'screen-loading', 'screen-complete'];
-    const fieldContainers = {
-      basic: document.getElementById('basicFields'),
-      detail: document.getElementById('detailFields')
-    };
 
-    function getIndustryConfig(industryId) {
-      return (window.CONFIG?.industries || []).find(item => item.id === industryId) || null;
+    // ============================================================
+    // 画面制御
+    // ============================================================
+
+    function getIndustryConfig(id) {
+      return (window.CONFIG?.industries || []).find(item => item.id === id) || null;
     }
 
     function showScreen(screenId, stepNumber) {
@@ -736,40 +798,9 @@
       });
     }
 
-    function createField(field) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'field' + ((field.type === 'textarea' || field.id === 'concept') ? ' full' : '');
-      wrapper.dataset.fieldId = field.id;
-
-      const label = document.createElement('label');
-      label.setAttribute('for', field.id);
-      label.innerHTML = `${field.label}${field.required ? '<span class="required">*</span>' : ''}`;
-
-      const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
-      input.id = field.id;
-      input.name = field.id;
-      input.placeholder = field.placeholder || '';
-      input.maxLength = field.maxLength || 9999;
-      input.value = appState.formData[field.id] || '';
-      if (field.type !== 'textarea') input.type = field.type;
-      if (field.required) input.setAttribute('aria-required', 'true');
-
-      const help = document.createElement('div');
-      help.className = 'help';
-      help.textContent = field.required ? `必須 / 最大${field.maxLength}文字` : `任意 / 最大${field.maxLength}文字`;
-
-      const error = document.createElement('div');
-      error.className = 'error-text';
-      error.textContent = getErrorMessage(field);
-
-      input.addEventListener('input', () => {
-        appState.formData[field.id] = input.value;
-        wrapper.classList.remove('invalid');
-      });
-
-      wrapper.append(label, input, help, error);
-      return wrapper;
-    }
+    // ============================================================
+    // 業種カード
+    // ============================================================
 
     function renderIndustryCards() {
       const grid = document.getElementById('industryGrid');
@@ -779,7 +810,7 @@
         btn.type = 'button';
         btn.className = 'industry-card' + (appState.selectedIndustry === industry.id ? ' selected' : '');
         btn.innerHTML = `
-          <div class="industry-card__icon" aria-hidden="true">${industry.icon}</div>
+          <div class="industry-card__icon">${industry.icon}</div>
           <div class="industry-card__title">${industry.label}</div>
           <div class="industry-card__id">${industry.id}</div>
         `;
@@ -793,97 +824,453 @@
       });
     }
 
+    // ============================================================
+    // フォーム描画
+    // ============================================================
+
     function renderForm() {
       const industry = getIndustryConfig(appState.selectedIndustry);
-      const extraFields = INDUSTRY_EXTRA_FIELDS[appState.selectedIndustry] || [];
-      document.getElementById('selectedIndustryText').textContent = industry
-        ? `選択中の業種：${industry.icon} ${industry.label}`
-        : '';
+      document.getElementById('selectedIndustryText').textContent =
+        industry ? `選択中の業種：${industry.icon} ${industry.label}` : '';
 
-      fieldContainers.basic.innerHTML = '';
-      fieldContainers.detail.innerHTML = '';
-      COMMON_FIELDS.forEach(field => fieldContainers.basic.appendChild(createField(field)));
-      extraFields.forEach(field => fieldContainers.detail.appendChild(createField(field)));
+      const container = document.getElementById('formSections');
+      container.innerHTML = '';
+
+      FORM_SECTIONS.forEach(section => {
+        if (section.id === 'content_info') {
+          container.appendChild(buildDesignSection());
+        }
+        container.appendChild(buildFormSection(section));
+      });
     }
 
-    function getCurrentFields() {
-      return [...COMMON_FIELDS, ...(INDUSTRY_EXTRA_FIELDS[appState.selectedIndustry] || [])];
+    function buildFormSection(section) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'form-section';
+
+      const header = document.createElement('div');
+      header.className = 'form-section__header';
+      header.textContent = section.title;
+
+      const body = document.createElement('div');
+      body.className = 'form-section__body';
+
+      section.fields.forEach(field => body.appendChild(buildField(field)));
+
+      wrapper.appendChild(header);
+      wrapper.appendChild(body);
+      return wrapper;
     }
 
-    function getErrorMessage(field) {
-      if (field.required) {
-        return `${field.label}を正しく入力してください。`;
+    function buildField(field) {
+      const isWide = field.type === 'textarea';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'field' + (isWide ? ' full' : '');
+      wrapper.dataset.fieldId = field.id;
+
+      const label = document.createElement('label');
+      label.setAttribute('for', field.id);
+      const badge = field.required
+        ? '<span class="badge-required">必須</span>'
+        : '<span class="badge-optional">任意</span>';
+      label.innerHTML = `${field.label} ${badge}`;
+
+      const detail = document.createElement('div');
+      detail.className = 'field-detail';
+      detail.textContent = field.detail;
+
+      let input;
+      if (field.type === 'textarea') {
+        input = document.createElement('textarea');
+      } else {
+        input = document.createElement('input');
+        input.type = field.type || 'text';
       }
-      if (field.type === 'url') {
-        return 'URLの形式が正しくありません。';
-      }
-      return `${field.label}の入力内容を確認してください。`;
+      input.id = field.id;
+      input.name = field.id;
+      input.placeholder = field.placeholder || '';
+      input.maxLength = field.maxLength || 9999;
+      input.value = appState.formData[field.id] || '';
+      if (field.required) input.setAttribute('aria-required', 'true');
+
+      input.addEventListener('input', () => {
+        appState.formData[field.id] = input.value;
+        wrapper.classList.remove('invalid');
+      });
+
+      const error = document.createElement('div');
+      error.className = 'error-text';
+      error.textContent = field.required ? `${field.label}は必須項目です。` : `入力内容を確認してください。`;
+
+      wrapper.append(label, detail, input, error);
+      return wrapper;
     }
 
-    function isValidUrl(value) {
-      if (!value) return true;
-      try {
-        const url = new URL(value);
-        return ['http:', 'https:'].includes(url.protocol);
-      } catch {
-        return false;
-      }
+    // ============================================================
+    // デザインセクション（カラー + 参考URL + ファイルアップロード）
+    // ============================================================
+
+    function buildDesignSection() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'form-section';
+
+      const header = document.createElement('div');
+      header.className = 'form-section__header';
+      header.textContent = '🎨 デザイン・イメージ';
+
+      const body = document.createElement('div');
+      body.className = 'form-section__body block';
+
+      // 参考 HP URL
+      const refField = buildField(DESIGN_FIELDS[0]);
+      refField.style.marginBottom = '20px';
+      body.appendChild(refField);
+
+      // ─ アップロード ─
+      const uploadTitle = document.createElement('div');
+      uploadTitle.style.cssText = 'font-weight:700; font-size:14px; margin-bottom:4px; display:flex; align-items:center; gap:8px;';
+      uploadTitle.innerHTML = '参考画像・スクリーンショット <span class="badge-optional">任意</span>';
+
+      const uploadDetail = document.createElement('div');
+      uploadDetail.className = 'field-detail';
+      uploadDetail.style.marginBottom = '10px';
+      uploadDetail.textContent = '参考HPのスクリーンショット、ロゴ、イメージ画像などをアップロードしてください（複数可）';
+
+      const dropzone = buildDropzone();
+
+      const previewGrid = document.createElement('div');
+      previewGrid.id = 'filePreviewGrid';
+      previewGrid.className = 'file-preview-grid';
+      renderFilePreviews(previewGrid);
+
+      body.appendChild(uploadTitle);
+      body.appendChild(uploadDetail);
+      body.appendChild(dropzone);
+      body.appendChild(previewGrid);
+
+      // ─ カラーパレット ─
+      const hr = document.createElement('hr');
+      hr.className = 'section-divider';
+      body.appendChild(hr);
+
+      const colorTitle = document.createElement('div');
+      colorTitle.style.cssText = 'font-weight:700; font-size:14px; margin-bottom:4px; display:flex; align-items:center; gap:8px;';
+      colorTitle.innerHTML = '🎨 カラーテーマ <span class="badge-optional">任意</span>';
+
+      const colorDetail = document.createElement('div');
+      colorDetail.className = 'field-detail';
+      colorDetail.style.marginBottom = '12px';
+      colorDetail.textContent = 'サイトの色味を選んでください。プリセットを選ぶか、カスタムで3色を自由に指定できます。';
+
+      // プリセットグリッド
+      const paletteGrid = document.createElement('div');
+      paletteGrid.className = 'color-palette-grid';
+      paletteGrid.id = 'colorPaletteGrid';
+
+      COLOR_PALETTES.forEach(palette => {
+        const card = document.createElement('div');
+        card.className = 'palette-card' + (appState.selectedPalette === palette.id ? ' selected' : '');
+        card.dataset.pid = palette.id;
+        card.innerHTML = `
+          <div class="palette-swatches">
+            <div class="palette-swatch" style="background:${palette.primary}"></div>
+            <div class="palette-swatch" style="background:${palette.secondary}"></div>
+            <div class="palette-swatch" style="background:${palette.accent}; border-color:#ddd;"></div>
+          </div>
+          <div class="palette-name">${palette.name}</div>
+        `;
+        card.addEventListener('click', () => {
+          appState.selectedPalette = palette.id;
+          appState.customColors = { primary: palette.primary, secondary: palette.secondary, accent: palette.accent };
+          syncPaletteUI();
+          syncColorPickers();
+        });
+        paletteGrid.appendChild(card);
+      });
+
+      // カスタムカラーピッカー
+      const customSection = document.createElement('div');
+      customSection.className = 'custom-color-section';
+      customSection.style.marginTop = '14px';
+
+      const csh4 = document.createElement('h4');
+      csh4.textContent = 'カスタムカラー（プリセット選択後に微調整も可）';
+      customSection.appendChild(csh4);
+
+      const pickersGrid = document.createElement('div');
+      pickersGrid.className = 'color-pickers-grid';
+
+      [
+        { key: 'primary',   label: 'メインカラー' },
+        { key: 'secondary', label: 'サブカラー' },
+        { key: 'accent',    label: 'アクセントカラー' },
+      ].forEach(({ key, label }) => {
+        const item = document.createElement('div');
+        item.className = 'color-picker-item';
+
+        const lbl = document.createElement('label');
+        lbl.setAttribute('for', `color-${key}`);
+        lbl.textContent = label;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'color-picker-wrap';
+
+        const picker = document.createElement('input');
+        picker.type = 'color';
+        picker.id = `color-${key}`;
+        picker.value = appState.customColors[key];
+
+        const hexInp = document.createElement('input');
+        hexInp.type = 'text';
+        hexInp.id = `hex-${key}`;
+        hexInp.className = 'hex-input';
+        hexInp.value = appState.customColors[key].toUpperCase();
+        hexInp.maxLength = 7;
+        hexInp.placeholder = '#000000';
+
+        picker.addEventListener('input', () => {
+          appState.customColors[key] = picker.value;
+          hexInp.value = picker.value.toUpperCase();
+          appState.selectedPalette = null;
+          syncPaletteUI();
+        });
+        hexInp.addEventListener('input', () => {
+          if (/^#[0-9A-Fa-f]{6}$/.test(hexInp.value)) {
+            appState.customColors[key] = hexInp.value;
+            picker.value = hexInp.value;
+            appState.selectedPalette = null;
+            syncPaletteUI();
+          }
+        });
+
+        wrap.append(picker, hexInp);
+        item.append(lbl, wrap);
+        pickersGrid.appendChild(item);
+      });
+
+      customSection.appendChild(pickersGrid);
+
+      body.appendChild(colorTitle);
+      body.appendChild(colorDetail);
+      body.appendChild(paletteGrid);
+      body.appendChild(customSection);
+
+      wrapper.appendChild(header);
+      wrapper.appendChild(body);
+      return wrapper;
     }
+
+    function syncPaletteUI() {
+      document.querySelectorAll('.palette-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.pid === appState.selectedPalette);
+      });
+    }
+
+    function syncColorPickers() {
+      ['primary', 'secondary', 'accent'].forEach(key => {
+        const picker = document.getElementById(`color-${key}`);
+        const hex    = document.getElementById(`hex-${key}`);
+        if (picker) picker.value = appState.customColors[key];
+        if (hex)    hex.value    = appState.customColors[key].toUpperCase();
+      });
+    }
+
+    // ============================================================
+    // ファイルアップロード
+    // ============================================================
+
+    function buildDropzone() {
+      const zone = document.createElement('div');
+      zone.className = 'dropzone';
+
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.multiple = true;
+      fileInput.accept = 'image/*';
+
+      const icon = document.createElement('div');
+      icon.className = 'dropzone__icon';
+      icon.textContent = '🖼️';
+
+      const text = document.createElement('div');
+      text.className = 'dropzone__text';
+      text.textContent = 'クリックまたはドラッグ&ドロップで画像をアップロード';
+
+      const sub = document.createElement('div');
+      sub.className = 'dropzone__sub';
+      sub.textContent = 'PNG / JPG / GIF / WebP 対応（複数選択可）';
+
+      zone.append(fileInput, icon, text, sub);
+
+      zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+      });
+      fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+      return zone;
+    }
+
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          appState.uploadedFiles.push({ file, dataUrl: e.target.result });
+          const grid = document.getElementById('filePreviewGrid');
+          if (grid) renderFilePreviews(grid);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderFilePreviews(grid) {
+      grid.innerHTML = '';
+      appState.uploadedFiles.forEach((item, index) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'file-preview-item';
+
+        const img = document.createElement('img');
+        img.src = item.dataUrl;
+        img.alt = item.file.name;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'file-remove-btn';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => {
+          appState.uploadedFiles.splice(index, 1);
+          renderFilePreviews(grid);
+        });
+
+        const name = document.createElement('div');
+        name.className = 'file-name-label';
+        name.textContent = item.file.name;
+
+        wrap.append(img, removeBtn, name);
+        grid.appendChild(wrap);
+      });
+    }
+
+    // ============================================================
+    // バリデーション
+    // ============================================================
 
     function validateForm() {
-      const fields = getCurrentFields();
       let valid = true;
-      fields.forEach(field => {
+      ALL_FIELDS.forEach(field => {
         const wrapper = document.querySelector(`[data-field-id="${field.id}"]`);
-        const input = document.getElementById(field.id);
+        const input   = document.getElementById(field.id);
         if (!wrapper || !input) return;
         const value = (input.value || '').trim();
         appState.formData[field.id] = value;
-        let isFieldValid = true;
-
-        if (field.required && !value) isFieldValid = false;
-        if (value && field.maxLength && value.length > field.maxLength) isFieldValid = false;
-        if (field.type === 'url' && value && !isValidUrl(value)) isFieldValid = false;
-
-        wrapper.classList.toggle('invalid', !isFieldValid);
-        if (!isFieldValid) valid = false;
+        let ok = true;
+        if (field.required && !value) ok = false;
+        if (value && field.maxLength && value.length > field.maxLength) ok = false;
+        wrapper.classList.toggle('invalid', !ok);
+        if (!ok) valid = false;
       });
       return valid;
     }
 
+    // ============================================================
+    // 確認画面
+    // ============================================================
+
     function buildConfirmItems() {
-      const fields = getCurrentFields();
+      const industry = getIndustryConfig(appState.selectedIndustry);
       const grid = document.getElementById('confirmGrid');
       grid.innerHTML = '';
-      const industry = getIndustryConfig(appState.selectedIndustry);
 
-      const topCard = document.createElement('div');
-      topCard.className = 'confirm-item full';
-      topCard.innerHTML = `
-        <div class="confirm-item__label">選択業種</div>
-        <div class="confirm-item__value">${industry ? `${industry.icon} ${industry.label}` : '-'}</div>
-      `;
-      grid.appendChild(topCard);
+      // 選択業種
+      addConfirmItem(grid, '選択業種', industry ? `${industry.icon} ${industry.label}` : '—', true);
 
-      fields.forEach(field => {
-        const value = appState.formData[field.id] || '—';
-        const item = document.createElement('div');
-        item.className = 'confirm-item' + ((field.type === 'textarea' || value.length > 60) ? ' full' : '');
-        item.innerHTML = `
-          <div class="confirm-item__label">${field.label}</div>
-          <div class="confirm-item__value"></div>
+      // カラーテーマ
+      const palette = COLOR_PALETTES.find(p => p.id === appState.selectedPalette);
+      const { primary, secondary, accent } = appState.customColors;
+      const colorCard = document.createElement('div');
+      colorCard.className = 'confirm-item full';
+      colorCard.innerHTML = `<div class="confirm-item__label">カラーテーマ${palette ? `（${palette.name}）` : '（カスタム）'}</div>`;
+      const swatches = document.createElement('div');
+      swatches.className = 'confirm-swatches';
+      [
+        { color: primary,   label: 'メイン' },
+        { color: secondary, label: 'サブ' },
+        { color: accent,    label: 'アクセント' },
+      ].forEach(({ color, label }) => {
+        const g = document.createElement('div');
+        g.className = 'confirm-swatch-group';
+        g.innerHTML = `
+          <div class="confirm-swatch" style="background:${color}"></div>
+          <span class="confirm-swatch-hex">${color.toUpperCase()} <span style="color:#94A3B8;font-size:11px;">${label}</span></span>
         `;
-        item.querySelector('.confirm-item__value').textContent = value;
-        grid.appendChild(item);
+        swatches.appendChild(g);
+      });
+      colorCard.appendChild(swatches);
+      grid.appendChild(colorCard);
+
+      // 参考画像
+      if (appState.uploadedFiles.length > 0) {
+        const imgCard = document.createElement('div');
+        imgCard.className = 'confirm-item full';
+        imgCard.innerHTML = `<div class="confirm-item__label">参考画像（${appState.uploadedFiles.length}枚）</div>`;
+        const thumbs = document.createElement('div');
+        thumbs.className = 'confirm-thumbs';
+        appState.uploadedFiles.forEach(f => {
+          const img = document.createElement('img');
+          img.className = 'confirm-thumb';
+          img.src = f.dataUrl;
+          img.alt = f.file.name;
+          thumbs.appendChild(img);
+        });
+        imgCard.appendChild(thumbs);
+        grid.appendChild(imgCard);
+      }
+
+      // 参考URL
+      if (appState.formData['ref_url']) {
+        addConfirmItem(grid, '参考HP URL', appState.formData['ref_url'], true);
+      }
+
+      // 各セクション
+      FORM_SECTIONS.forEach(section => {
+        const hd = document.createElement('div');
+        hd.className = 'confirm-section-hd';
+        hd.textContent = section.title;
+        grid.appendChild(hd);
+
+        section.fields.forEach(field => {
+          const value  = appState.formData[field.id] || '—';
+          const isWide = field.type === 'textarea' || value.length > 60;
+          addConfirmItem(grid, field.label, value, isWide);
+        });
       });
     }
+
+    function addConfirmItem(grid, label, value, full) {
+      const item = document.createElement('div');
+      item.className = 'confirm-item' + (full ? ' full' : '');
+      item.innerHTML = `<div class="confirm-item__label">${label}</div><div class="confirm-item__value"></div>`;
+      item.querySelector('.confirm-item__value').textContent = value;
+      grid.appendChild(item);
+    }
+
+    // ============================================================
+    // 送信・GAS
+    // ============================================================
 
     function getSubmissionPayload() {
       const industry = getIndustryConfig(appState.selectedIndustry);
       return {
         industry: appState.selectedIndustry,
         industry_label: industry?.label || '',
-        ...appState.formData
+        colors: appState.customColors,
+        palette: appState.selectedPalette,
+        uploaded_files_count: appState.uploadedFiles.length,
+        ...appState.formData,
       };
     }
 
@@ -893,29 +1280,24 @@
         'AIがコピーを作成中...',
         'HTMLを生成中...',
         'GitHubへ送信中...',
-        'デプロイ中...'
+        'デプロイ中...',
       ];
       const list = document.getElementById('statusList');
       list.innerHTML = '';
-      statuses.forEach((text, index) => {
+      statuses.forEach((text, i) => {
         const li = document.createElement('li');
         li.className = 'status-item pending';
-        li.dataset.index = String(index);
-        li.innerHTML = `
-          <span class="icon">⏳</span>
-          <span>${text}</span>
-        `;
+        li.dataset.index = String(i);
+        li.innerHTML = `<span class="icon">⏳</span><span>${text}</span>`;
         list.appendChild(li);
       });
     }
 
     async function playLoadingAnimation() {
       renderStatusList();
-      const items = [...document.querySelectorAll('.status-item')];
-      for (const item of items) {
-        await new Promise(resolve => setTimeout(resolve, MOCK_DELAY_MS));
-        item.classList.remove('pending');
-        item.classList.add('done');
+      for (const item of [...document.querySelectorAll('.status-item')]) {
+        await new Promise(r => setTimeout(r, MOCK_DELAY_MS));
+        item.classList.replace('pending', 'done');
         item.querySelector('.icon').textContent = '✅';
       }
     }
@@ -924,82 +1306,59 @@
       const endpoint = window.CONFIG?.GAS_ENDPOINT;
       if (!endpoint || endpoint.includes('YOUR_DEPLOYMENT_ID')) {
         return {
-          ok: true,
-          mock: true,
-          url: `https://example.pages.dev/sites/${payload.industry || 'site'}-001/`,
+          ok: true, mock: true,
+          url:      `https://example.pages.dev/sites/${payload.industry || 'site'}-001/`,
           sheetUrl: 'https://docs.google.com/spreadsheets/',
-          githubUrl: 'https://github.com/example/repo/tree/main/sites/',
-          message: 'モックモードで完了しました。config.jsにGAS_ENDPOINTを設定すると本番接続できます。'
+          githubUrl:'https://github.com/example/repo/tree/main/sites/',
+          message:  'モックモードで完了しました。config.jsにGAS_ENDPOINTを設定すると本番接続できます。',
         };
       }
-
-      const response = await fetch(endpoint, {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
-
       let data = {};
-      try {
-        data = await response.json();
-      } catch (error) {
-        // JSON以外のレスポンスも想定して、下でエラー扱いにする
-      }
-
-      if (!response.ok || data.ok === false) {
-        const message = data.error || data.message || 'サーバーでエラーが発生しました。設定内容を確認してください。';
-        throw new Error(message);
-      }
-
+      try { data = await res.json(); } catch (_) {}
+      if (!res.ok || data.ok === false) throw new Error(data.error || data.message || 'サーバーエラーが発生しました。');
       return data;
     }
 
-    function showErrorBanner(message) {
-      const banner = document.getElementById('errorBanner');
-      banner.textContent = message;
-      banner.classList.add('show');
+    function showErrorBanner(msg) {
+      const b = document.getElementById('errorBanner');
+      b.textContent = msg;
+      b.classList.add('show');
     }
-
     function hideErrorBanner() {
-      const banner = document.getElementById('errorBanner');
-      banner.textContent = '';
-      banner.classList.remove('show');
+      const b = document.getElementById('errorBanner');
+      b.textContent = '';
+      b.classList.remove('show');
     }
 
     async function handleGenerate() {
       hideErrorBanner();
       showScreen('screen-loading', 4);
-
-      const payload = getSubmissionPayload();
       try {
-        const [result] = await Promise.all([
-          submitToGas(payload),
-          playLoadingAnimation()
-        ]);
-
+        const [result] = await Promise.all([submitToGas(getSubmissionPayload()), playLoadingAnimation()]);
         appState.result = {
-          url: result.url || '',
+          url:      result.url      || '',
           sheetUrl: result.sheetUrl || 'https://docs.google.com/spreadsheets/',
-          githubUrl: result.githubUrl || 'https://github.com/'
+          githubUrl:result.githubUrl|| 'https://github.com/',
         };
-
-        if (result.mock && result.message) {
-          console.info(result.message);
-        }
-
+        if (result.mock && result.message) console.info(result.message);
         fillCompleteScreen();
         showScreen('screen-complete', 5);
-      } catch (error) {
-        console.error(error);
-        showErrorBanner(`生成に失敗しました：${error.message}`);
+      } catch (err) {
+        console.error(err);
+        showErrorBanner(`生成に失敗しました：${err.message}`);
       }
     }
 
     function fillCompleteScreen() {
       const { url, sheetUrl, githubUrl } = appState.result;
-      document.getElementById('resultUrl').value = url || '';
-      document.getElementById('openSiteBtn').href = url || '#';
-      document.getElementById('openSheetBtn').href = sheetUrl || '#';
+      document.getElementById('resultUrl').value    = url || '';
+      document.getElementById('openSiteBtn').href   = url || '#';
+      document.getElementById('openSheetBtn').href  = sheetUrl || '#';
       document.getElementById('openManageBtn').href = githubUrl || '#';
     }
 
@@ -1009,9 +1368,9 @@
       try {
         await navigator.clipboard.writeText(input.value);
         const btn = document.getElementById('copyUrlBtn');
-        const original = btn.textContent;
-        btn.textContent = 'コピーしました';
-        setTimeout(() => { btn.textContent = original; }, 1400);
+        const orig = btn.textContent;
+        btn.textContent = 'コピーしました ✓';
+        setTimeout(() => { btn.textContent = orig; }, 1400);
       } catch {
         input.select();
         document.execCommand('copy');
@@ -1020,16 +1379,23 @@
 
     function resetAll() {
       appState.selectedIndustry = null;
-      appState.formData = {};
-      appState.result = { url: '', sheetUrl: '', githubUrl: '' };
+      appState.formData         = {};
+      appState.selectedPalette  = null;
+      appState.customColors     = { primary: '#2563EB', secondary: '#64748B', accent: '#F8FAFC' };
+      appState.uploadedFiles    = [];
+      appState.result           = { url: '', sheetUrl: '', githubUrl: '' };
       hideErrorBanner();
       renderIndustryCards();
       showScreen('screen-industry', 1);
     }
 
+    // ============================================================
+    // イベント登録
+    // ============================================================
+
     document.getElementById('backToIndustryBtn').addEventListener('click', () => showScreen('screen-industry', 1));
-    document.getElementById('confirmBackBtn').addEventListener('click', () => showScreen('screen-form', 2));
-    document.getElementById('editBtn').addEventListener('click', () => showScreen('screen-form', 2));
+    document.getElementById('confirmBackBtn').addEventListener('click',    () => showScreen('screen-form', 2));
+    document.getElementById('editBtn').addEventListener('click',           () => showScreen('screen-form', 2));
     document.getElementById('generateBtn').addEventListener('click', handleGenerate);
     document.getElementById('copyUrlBtn').addEventListener('click', copyResultUrl);
     document.getElementById('resetBtn').addEventListener('click', resetAll);
@@ -1041,13 +1407,16 @@
         return;
       }
       if (!validateForm()) {
-        alert('未入力または形式に誤りがある項目があります。赤い表示を確認してください。');
+        alert('未入力または形式に誤りがある項目があります。赤い表示の項目を確認してください。');
         return;
       }
       buildConfirmItems();
       showScreen('screen-confirm', 3);
     });
 
+    // ============================================================
+    // 初期化
+    // ============================================================
     renderIndustryCards();
     updateProgressBars(1);
   </script>
