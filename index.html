@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HP自動生成ツール</title>
+  <style>
+    :root {
+      --color-primary: #2563EB;
+      --color-primary-dark: #1D4ED8;
+      --color-bg: #F8FAFC;
+      --color-surface: #FFFFFF;
+      --color-text: #1E293B;
+      --color-text-muted: #64748B;
+      --color-border: #E2E8F0;
+      --color-success: #10B981;
+      --color-danger: #EF4444;
+      --font-size-base: 15px;
+      --font-size-lg: 18px;
+      --font-size-xl: 24px;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --max-width: 980px;
+      --transition: 220ms ease;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+      font-size: var(--font-size-base);
+      background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
+      color: var(--color-text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .header__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #DBEAFE;
+      color: var(--color-primary-dark);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .header h1 {
+      font-size: clamp(24px, 3vw, 34px);
+      margin: 0 0 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+
+    .screen {
+      display: none;
+      animation: slideIn 260ms ease;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(14px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .industry-card {
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 24px 16px;
+      background: linear-gradient(180deg, #fff 0%, #F8FAFC 100%);
+      cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      text-align: center;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .industry-card:hover,
+    .industry-card:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--color-primary);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1);
+      outline: none;
+    }
+
+    .industry-card.selected {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .industry-card__icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .industry-card__title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .industry-card__id {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .progress-wrap {
+      margin-bottom: 18px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #E5E7EB;
+      overflow: hidden;
+    }
+
+    .progress-bar__value {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--color-primary), #60A5FA);
+      transition: width 260ms ease;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 22px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title:first-of-type { margin-top: 4px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    .field label {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .field .required {
+      color: var(--color-danger);
+      margin-left: 4px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--color-text);
+      background: #fff;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      outline: none;
+    }
+
+    .help {
+      color: var(--color-text-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .error-text {
+      color: var(--color-danger);
+      font-size: 12px;
+      display: none;
+    }
+
+    .field.invalid .error-text {
+      display: block;
+    }
+
+    .field.invalid input,
+    .field.invalid textarea {
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 700;
+      transition: transform var(--transition), background var(--transition), opacity var(--transition), box-shadow var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.16);
+    }
+
+    .btn-primary:hover { background: var(--color-primary-dark); }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-success {
+      background: var(--color-success);
+      color: #fff;
+    }
+
+    .confirm-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .confirm-item {
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .confirm-item.full { grid-column: 1 / -1; }
+
+    .confirm-item__label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+    }
+
+    .confirm-item__value {
+      font-size: 15px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .confirm-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .loading-center,
+    .complete-center {
+      text-align: center;
+      padding: 12px 0;
+    }
+
+    .spinner {
+      width: 64px;
+      height: 64px;
+      border: 6px solid #DBEAFE;
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      margin: 8px auto 20px;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-list {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .status-item {
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      text-align: left;
+    }
+
+    .status-item .icon {
+      width: 28px;
+      min-width: 28px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .status-item.pending .icon { color: #F59E0B; }
+    .status-item.done {
+      border-color: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.04);
+    }
+    .status-item.done .icon { color: var(--color-success); }
+
+    .complete-icon {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .result-box {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid #BBF7D0;
+      background: #F0FDF4;
+      text-align: left;
+    }
+
+    .result-url {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .result-url input {
+      flex: 1;
+      min-width: 220px;
+      background: #fff;
+    }
+
+    .inline-links {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #EFF6FF;
+      color: var(--color-primary-dark);
+      border: 1px solid #BFDBFE;
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    .error-banner {
+      display: none;
+      margin-top: 16px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid #FECACA;
+      background: #FEF2F2;
+      color: #991B1B;
+      line-height: 1.6;
+    }
+
+    .error-banner.show { display: block; }
+
+    .small {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .industry-grid,
+      .form-grid,
+      .confirm-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card { padding: 16px; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .btn-group { width: 100%; }
+      .btn-group .btn, .actions > .btn { width: 100%; }
+      .result-url { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header__badge">⚡ 社内スタッフ向け / ノーコード公開フロー</div>
+      <h1>HP自動生成ツール</h1>
+      <p>ヒアリング内容を入力するだけで、AIがコピーを整え、GitHubへ反映し、Cloudflare Pagesの公開URLまで発行します。</p>
+    </header>
+
+    <section id="screen-industry" class="screen active">
+      <div class="card">
+        <h2>① 業種を選択</h2>
+        <p class="help">まずはクライアントの業種を選んでください。選択後、そのままヒアリング入力に進みます。</p>
+        <div id="industryGrid" class="industry-grid"></div>
+      </div>
+    </section>
+
+    <section id="screen-form" class="screen">
+      <div class="card">
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span>① 業種選択</span>
+            <span>② ヒアリング入力</span>
+            <span>③ 入力確認</span>
+            <span>④ 生成中</span>
+            <span>⑤ 完了</span>
+          </div>
+          <div class="progress-bar"><div id="progressBar" class="progress-bar__value"></div></div>
+        </div>
+
+        <h2>② ヒアリング入力フォーム</h2>
+        <p id="selectedIndustryText" class="help"></p>
+        <form id="hearingForm" novalidate>
+          <h3 class="section-title">🧾 基本情報</h3>
+          <div class="form-grid" id="basicFields"></div>
+
+          <h3 class="section-title">📝 詳細情報</h3>
+          <div class="form-grid" id="detailFields"></div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-secondary" id="backToIndustryBtn">戻る</button>
+            <div class="btn-group">
+              <button type="button" class="btn btn-primary" id="confirmBtn">入力内容を確認する</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="screen-confirm" class="screen">
+      <div class="card">
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span>① 業種選択</span>
+            <span>② ヒアリング入力</span>
+            <span>③ 入力確認</span>
+            <span>④ 生成中</span>
+            <span>⑤ 完了</span>
+          </div>
+          <div class="progress-bar"><div id="progressBarConfirm" class="progress-bar__value"></div></div>
+        </div>
+
+        <div class="confirm-top">
+          <div>
+            <h2>③ 入力内容の確認</h2>
+            <p class="help">内容に問題がなければ「生成開始」を押してください。修正したい場合は編集ボタンから戻れます。</p>
+          </div>
+          <button type="button" class="btn btn-secondary" id="editBtn">編集する</button>
+        </div>
+
+        <div id="confirmGrid" class="confirm-grid"></div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" id="confirmBackBtn">戻る</button>
+          <button type="button" class="btn btn-primary" id="generateBtn">生成開始</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-loading" class="screen">
+      <div class="card loading-center">
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span>① 業種選択</span>
+            <span>② ヒアリング入力</span>
+            <span>③ 入力確認</span>
+            <span>④ 生成中</span>
+            <span>⑤ 完了</span>
+          </div>
+          <div class="progress-bar"><div id="progressBarLoading" class="progress-bar__value"></div></div>
+        </div>
+
+        <h2>④ サイトを生成しています</h2>
+        <p class="help">処理には数秒〜十数秒かかる場合があります。画面を閉じずにお待ちください。</p>
+        <div class="spinner" aria-hidden="true"></div>
+        <ul id="statusList" class="status-list"></ul>
+        <div id="errorBanner" class="error-banner"></div>
+      </div>
+    </section>
+
+    <section id="screen-complete" class="screen">
+      <div class="card complete-center">
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span>① 業種選択</span>
+            <span>② ヒアリング入力</span>
+            <span>③ 入力確認</span>
+            <span>④ 生成中</span>
+            <span>⑤ 完了</span>
+          </div>
+          <div class="progress-bar"><div id="progressBarComplete" class="progress-bar__value"></div></div>
+        </div>
+
+        <div class="complete-icon">✅</div>
+        <h2>⑤ サイトを発行しました</h2>
+        <p class="help">以下のURLと管理情報を確認してください。</p>
+
+        <div class="result-box">
+          <div><strong>発行URL</strong></div>
+          <div class="result-url">
+            <input id="resultUrl" type="text" readonly value="" />
+            <button id="copyUrlBtn" type="button" class="btn btn-secondary">URLをコピー</button>
+          </div>
+          <div class="inline-links">
+            <a id="openSiteBtn" class="btn btn-primary" href="#" target="_blank" rel="noopener">サイトを確認する</a>
+            <a id="openSheetBtn" class="btn btn-secondary" href="#" target="_blank" rel="noopener">スプレッドシートを開く</a>
+            <a id="openManageBtn" class="btn btn-secondary" href="#" target="_blank" rel="noopener">管理リンクを開く</a>
+          </div>
+        </div>
+
+        <div class="notice">
+          Cloudflare Pagesの反映直後は、表示まで数十秒かかる場合があります。アクセスできない場合は少し待ってから再読み込みしてください。
+        </div>
+
+        <div class="actions" style="justify-content:center; margin-top: 24px;">
+          <button type="button" class="btn btn-success" id="resetBtn">次のサイトを作成する</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./config.js"></script>
+  <script>
+    // 業種別の追加フィールド定義
+    const INDUSTRY_EXTRA_FIELDS = {
+      salon: [
+        {
+          id: 'menu_details',
+          label: 'メニュー・料金',
+          type: 'textarea',
+          required: false,
+          maxLength: 1000,
+          placeholder: '例：カット 4,500円 / カラー 6,500円 / トリートメント 3,000円'
+        },
+        {
+          id: 'staff_intro',
+          label: 'スタイリスト紹介',
+          type: 'textarea',
+          required: false,
+          maxLength: 1000,
+          placeholder: '例：店長○○。都内サロン歴10年。似合わせカットが得意。'
+        }
+      ],
+      food: [
+        {
+          id: 'menu_details',
+          label: 'メニュー・料金',
+          type: 'textarea',
+          required: false,
+          maxLength: 1000,
+          placeholder: '例：ランチプレート 1,200円 / ブレンドコーヒー 550円'
+        },
+        {
+          id: 'seat_info',
+          label: '席数・個室有無',
+          type: 'text',
+          required: false,
+          maxLength: 120,
+          placeholder: '例：全24席 / 半個室2室あり'
+        }
+      ],
+      clinic: [
+        {
+          id: 'menu_details',
+          label: '施術メニュー',
+          type: 'textarea',
+          required: false,
+          maxLength: 1000,
+          placeholder: '例：整体 60分 5,500円 / 骨盤調整 45分 4,000円'
+        },
+        {
+          id: 'credentials',
+          label: '資格・経歴',
+          type: 'textarea',
+          required: false,
+          maxLength: 1000,
+          placeholder: '例：柔道整復師。施術歴12年。スポーツケア実績多数。'
+        }
+      ],
+      school: [
+        {
+          id: 'menu_details',
+          label: 'コース・料金',
+          type: 'textarea',
+          required: false,
+          maxLength: 1000,
+          placeholder: '例：月4回コース 8,800円 / 個別レッスン 60分 3,500円'
+        },
+        {
+          id: 'target_level',
+          label: '対象年齢・レベル',
+          type: 'text',
+          required: false,
+          maxLength: 120,
+          placeholder: '例：小学生〜大人 / 初心者〜上級者'
+        }
+      ]
+    };
+
+    // 共通フィールド定義
+    const COMMON_FIELDS = [
+      { id: 'shop_name', label: '店舗名・屋号', type: 'text', required: true, maxLength: 50, placeholder: '例：美容室 Lumière' },
+      { id: 'tagline', label: 'キャッチフレーズ（任意）', type: 'text', required: false, maxLength: 100, placeholder: '例：毎日に、似合う美しさを。' },
+      { id: 'concept', label: 'コンセプト・想い', type: 'textarea', required: true, maxLength: 500, placeholder: '例：忙しい毎日の中でも、ほっとできる時間を届けたい。丁寧なカウンセリングで、一人ひとりに似合う提案を大切にしています。' },
+      { id: 'address', label: '住所', type: 'text', required: true, maxLength: 200, placeholder: '例：東京都渋谷区○○1-2-3 ○○ビル2F' },
+      { id: 'tel', label: '電話番号', type: 'tel', required: false, maxLength: 30, placeholder: '例：03-1234-5678' },
+      { id: 'hours', label: '営業時間', type: 'text', required: false, maxLength: 100, placeholder: '例：10:00〜19:00' },
+      { id: 'closed_days', label: '定休日', type: 'text', required: false, maxLength: 100, placeholder: '例：毎週火曜・第2水曜' },
+      { id: 'sns_instagram', label: 'Instagram URL', type: 'url', required: false, maxLength: 200, placeholder: '例：https://www.instagram.com/example/' }
+    ];
+
+    const MOCK_DELAY_MS = 1700;
+    const appState = {
+      step: 1,
+      selectedIndustry: null,
+      formData: {},
+      result: {
+        url: '',
+        sheetUrl: '',
+        githubUrl: ''
+      }
+    };
+
+    const screenIds = ['screen-industry', 'screen-form', 'screen-confirm', 'screen-loading', 'screen-complete'];
+    const fieldContainers = {
+      basic: document.getElementById('basicFields'),
+      detail: document.getElementById('detailFields')
+    };
+
+    function getIndustryConfig(industryId) {
+      return (window.CONFIG?.industries || []).find(item => item.id === industryId) || null;
+    }
+
+    function showScreen(screenId, stepNumber) {
+      screenIds.forEach(id => {
+        document.getElementById(id).classList.toggle('active', id === screenId);
+      });
+      appState.step = stepNumber;
+      updateProgressBars(stepNumber);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateProgressBars(stepNumber) {
+      const percent = Math.max(0, Math.min(100, ((stepNumber - 1) / 4) * 100));
+      ['progressBar', 'progressBarConfirm', 'progressBarLoading', 'progressBarComplete'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.width = percent + '%';
+      });
+    }
+
+    function createField(field) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'field' + ((field.type === 'textarea' || field.id === 'concept') ? ' full' : '');
+      wrapper.dataset.fieldId = field.id;
+
+      const label = document.createElement('label');
+      label.setAttribute('for', field.id);
+      label.innerHTML = `${field.label}${field.required ? '<span class="required">*</span>' : ''}`;
+
+      const input = document.createElement(field.type === 'textarea' ? 'textarea' : 'input');
+      input.id = field.id;
+      input.name = field.id;
+      input.placeholder = field.placeholder || '';
+      input.maxLength = field.maxLength || 9999;
+      input.value = appState.formData[field.id] || '';
+      if (field.type !== 'textarea') input.type = field.type;
+      if (field.required) input.setAttribute('aria-required', 'true');
+
+      const help = document.createElement('div');
+      help.className = 'help';
+      help.textContent = field.required ? `必須 / 最大${field.maxLength}文字` : `任意 / 最大${field.maxLength}文字`;
+
+      const error = document.createElement('div');
+      error.className = 'error-text';
+      error.textContent = getErrorMessage(field);
+
+      input.addEventListener('input', () => {
+        appState.formData[field.id] = input.value;
+        wrapper.classList.remove('invalid');
+      });
+
+      wrapper.append(label, input, help, error);
+      return wrapper;
+    }
+
+    function renderIndustryCards() {
+      const grid = document.getElementById('industryGrid');
+      grid.innerHTML = '';
+      (window.CONFIG?.industries || []).forEach(industry => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'industry-card' + (appState.selectedIndustry === industry.id ? ' selected' : '');
+        btn.innerHTML = `
+          <div class="industry-card__icon" aria-hidden="true">${industry.icon}</div>
+          <div class="industry-card__title">${industry.label}</div>
+          <div class="industry-card__id">${industry.id}</div>
+        `;
+        btn.addEventListener('click', () => {
+          appState.selectedIndustry = industry.id;
+          renderIndustryCards();
+          renderForm();
+          showScreen('screen-form', 2);
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderForm() {
+      const industry = getIndustryConfig(appState.selectedIndustry);
+      const extraFields = INDUSTRY_EXTRA_FIELDS[appState.selectedIndustry] || [];
+      document.getElementById('selectedIndustryText').textContent = industry
+        ? `選択中の業種：${industry.icon} ${industry.label}`
+        : '';
+
+      fieldContainers.basic.innerHTML = '';
+      fieldContainers.detail.innerHTML = '';
+      COMMON_FIELDS.forEach(field => fieldContainers.basic.appendChild(createField(field)));
+      extraFields.forEach(field => fieldContainers.detail.appendChild(createField(field)));
+    }
+
+    function getCurrentFields() {
+      return [...COMMON_FIELDS, ...(INDUSTRY_EXTRA_FIELDS[appState.selectedIndustry] || [])];
+    }
+
+    function getErrorMessage(field) {
+      if (field.required) {
+        return `${field.label}を正しく入力してください。`;
+      }
+      if (field.type === 'url') {
+        return 'URLの形式が正しくありません。';
+      }
+      return `${field.label}の入力内容を確認してください。`;
+    }
+
+    function isValidUrl(value) {
+      if (!value) return true;
+      try {
+        const url = new URL(value);
+        return ['http:', 'https:'].includes(url.protocol);
+      } catch {
+        return false;
+      }
+    }
+
+    function validateForm() {
+      const fields = getCurrentFields();
+      let valid = true;
+      fields.forEach(field => {
+        const wrapper = document.querySelector(`[data-field-id="${field.id}"]`);
+        const input = document.getElementById(field.id);
+        if (!wrapper || !input) return;
+        const value = (input.value || '').trim();
+        appState.formData[field.id] = value;
+        let isFieldValid = true;
+
+        if (field.required && !value) isFieldValid = false;
+        if (value && field.maxLength && value.length > field.maxLength) isFieldValid = false;
+        if (field.type === 'url' && value && !isValidUrl(value)) isFieldValid = false;
+
+        wrapper.classList.toggle('invalid', !isFieldValid);
+        if (!isFieldValid) valid = false;
+      });
+      return valid;
+    }
+
+    function buildConfirmItems() {
+      const fields = getCurrentFields();
+      const grid = document.getElementById('confirmGrid');
+      grid.innerHTML = '';
+      const industry = getIndustryConfig(appState.selectedIndustry);
+
+      const topCard = document.createElement('div');
+      topCard.className = 'confirm-item full';
+      topCard.innerHTML = `
+        <div class="confirm-item__label">選択業種</div>
+        <div class="confirm-item__value">${industry ? `${industry.icon} ${industry.label}` : '-'}</div>
+      `;
+      grid.appendChild(topCard);
+
+      fields.forEach(field => {
+        const value = appState.formData[field.id] || '—';
+        const item = document.createElement('div');
+        item.className = 'confirm-item' + ((field.type === 'textarea' || value.length > 60) ? ' full' : '');
+        item.innerHTML = `
+          <div class="confirm-item__label">${field.label}</div>
+          <div class="confirm-item__value"></div>
+        `;
+        item.querySelector('.confirm-item__value').textContent = value;
+        grid.appendChild(item);
+      });
+    }
+
+    function getSubmissionPayload() {
+      const industry = getIndustryConfig(appState.selectedIndustry);
+      return {
+        industry: appState.selectedIndustry,
+        industry_label: industry?.label || '',
+        ...appState.formData
+      };
+    }
+
+    function renderStatusList() {
+      const statuses = [
+        '入力内容を確認しました',
+        'AIがコピーを作成中...',
+        'HTMLを生成中...',
+        'GitHubへ送信中...',
+        'デプロイ中...'
+      ];
+      const list = document.getElementById('statusList');
+      list.innerHTML = '';
+      statuses.forEach((text, index) => {
+        const li = document.createElement('li');
+        li.className = 'status-item pending';
+        li.dataset.index = String(index);
+        li.innerHTML = `
+          <span class="icon">⏳</span>
+          <span>${text}</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    async function playLoadingAnimation() {
+      renderStatusList();
+      const items = [...document.querySelectorAll('.status-item')];
+      for (const item of items) {
+        await new Promise(resolve => setTimeout(resolve, MOCK_DELAY_MS));
+        item.classList.remove('pending');
+        item.classList.add('done');
+        item.querySelector('.icon').textContent = '✅';
+      }
+    }
+
+    async function submitToGas(payload) {
+      const endpoint = window.CONFIG?.GAS_ENDPOINT;
+      if (!endpoint || endpoint.includes('YOUR_DEPLOYMENT_ID')) {
+        return {
+          ok: true,
+          mock: true,
+          url: `https://example.pages.dev/sites/${payload.industry || 'site'}-001/`,
+          sheetUrl: 'https://docs.google.com/spreadsheets/',
+          githubUrl: 'https://github.com/example/repo/tree/main/sites/',
+          message: 'モックモードで完了しました。config.jsにGAS_ENDPOINTを設定すると本番接続できます。'
+        };
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (error) {
+        // JSON以外のレスポンスも想定して、下でエラー扱いにする
+      }
+
+      if (!response.ok || data.ok === false) {
+        const message = data.error || data.message || 'サーバーでエラーが発生しました。設定内容を確認してください。';
+        throw new Error(message);
+      }
+
+      return data;
+    }
+
+    function showErrorBanner(message) {
+      const banner = document.getElementById('errorBanner');
+      banner.textContent = message;
+      banner.classList.add('show');
+    }
+
+    function hideErrorBanner() {
+      const banner = document.getElementById('errorBanner');
+      banner.textContent = '';
+      banner.classList.remove('show');
+    }
+
+    async function handleGenerate() {
+      hideErrorBanner();
+      showScreen('screen-loading', 4);
+
+      const payload = getSubmissionPayload();
+      try {
+        const [result] = await Promise.all([
+          submitToGas(payload),
+          playLoadingAnimation()
+        ]);
+
+        appState.result = {
+          url: result.url || '',
+          sheetUrl: result.sheetUrl || 'https://docs.google.com/spreadsheets/',
+          githubUrl: result.githubUrl || 'https://github.com/'
+        };
+
+        if (result.mock && result.message) {
+          console.info(result.message);
+        }
+
+        fillCompleteScreen();
+        showScreen('screen-complete', 5);
+      } catch (error) {
+        console.error(error);
+        showErrorBanner(`生成に失敗しました：${error.message}`);
+      }
+    }
+
+    function fillCompleteScreen() {
+      const { url, sheetUrl, githubUrl } = appState.result;
+      document.getElementById('resultUrl').value = url || '';
+      document.getElementById('openSiteBtn').href = url || '#';
+      document.getElementById('openSheetBtn').href = sheetUrl || '#';
+      document.getElementById('openManageBtn').href = githubUrl || '#';
+    }
+
+    async function copyResultUrl() {
+      const input = document.getElementById('resultUrl');
+      if (!input.value) return;
+      try {
+        await navigator.clipboard.writeText(input.value);
+        const btn = document.getElementById('copyUrlBtn');
+        const original = btn.textContent;
+        btn.textContent = 'コピーしました';
+        setTimeout(() => { btn.textContent = original; }, 1400);
+      } catch {
+        input.select();
+        document.execCommand('copy');
+      }
+    }
+
+    function resetAll() {
+      appState.selectedIndustry = null;
+      appState.formData = {};
+      appState.result = { url: '', sheetUrl: '', githubUrl: '' };
+      hideErrorBanner();
+      renderIndustryCards();
+      showScreen('screen-industry', 1);
+    }
+
+    document.getElementById('backToIndustryBtn').addEventListener('click', () => showScreen('screen-industry', 1));
+    document.getElementById('confirmBackBtn').addEventListener('click', () => showScreen('screen-form', 2));
+    document.getElementById('editBtn').addEventListener('click', () => showScreen('screen-form', 2));
+    document.getElementById('generateBtn').addEventListener('click', handleGenerate);
+    document.getElementById('copyUrlBtn').addEventListener('click', copyResultUrl);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+      if (!appState.selectedIndustry) {
+        alert('先に業種を選択してください。');
+        showScreen('screen-industry', 1);
+        return;
+      }
+      if (!validateForm()) {
+        alert('未入力または形式に誤りがある項目があります。赤い表示を確認してください。');
+        return;
+      }
+      buildConfirmItems();
+      showScreen('screen-confirm', 3);
+    });
+
+    renderIndustryCards();
+    updateProgressBars(1);
+  </script>
+</body>
+</html>
